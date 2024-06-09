@@ -1,0 +1,60 @@
+{
+	"openapi": "3.0.0",
+	"info": {
+		"title": "Team A - SPKL Internet Service Provider - AHP",
+		"description": "Backend API - Decision Support System using the AHP (analytical hierarchy process) method in a case study of calculating job priorities in internet network services Github: [TEAM A - Backend API](https://github.com/vierynugroho/SPK-internet-service-provider)",
+		"version": "1.0.0",
+		"contact": {
+			"name": "teamA-TIB-2021",
+			"url": "https://github.com/vierynugroho/SPK-internet-service-provider"
+		}
+	},
+	"tags": [
+		{
+			"name": "Root",
+			"description": "this is our API"
+		}
+	],
+	"servers": [
+		{
+			"url": "https://team-a-spk-internet-service-provider.vercel.app/api/v1",
+			"description": "deployment"
+		},
+		{
+			"url": "http://localhost:2000/api/v1",
+			"description": "localhost"
+		}
+	],
+	"paths": {
+		"/": {
+			"post": {
+				"tags": ["Root"],
+				"summary": "Return result of API",
+				"description": "This API is for root API",
+
+				"responses": {
+					"200": {
+						"description": "success hit API",
+						"content": {
+							"application/json": {
+								"schema": {
+									"type": "object",
+									"properties": {
+										"status": {
+											"type": "boolean",
+											"example": true
+										},
+										"message": {
+											"type": "string",
+											"example": "Welcome to API Akuuhh"
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

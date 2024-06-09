@@ -4,8 +4,12 @@ import router from './routes/index.js';
 import logger from 'morgan';
 import MORGAN_FORMAT from './config/logger.js';
 import helmet from 'helmet';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 //* configuration to allow all origins and specific methods and headers.
 app.use(
@@ -18,8 +22,9 @@ app.use(
 
 app.use(helmet());
 app.use(express.json());
-app.use(logger(MORGAN_FORMAT));
+app.use(logger('dev'));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname + '/public'));
 
 //* Force the output to be application/json and remove fingerprint
 app.use((req, res, next) => {
@@ -49,6 +54,7 @@ app.use((req, res) => {
 		method,
 		url,
 		message: 'Not Found!',
+		docs: '/documentation',
 	});
 });
 
