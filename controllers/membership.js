@@ -90,7 +90,7 @@ const getMembership = async (req, res, next) => {
 
 const createMembership = async (req, res, next) => {
 	try {
-		let { locationDistance, problem, timeOfIncident, cost } = req.body;
+		let { locationDistance, problem, timeOfIncident, cost, status } = req.body;
 
 		const fetchMember = await prisma.membership.findMany({
 			include: { user: true },
@@ -153,6 +153,7 @@ const createMembership = async (req, res, next) => {
 				locationDistance,
 				problem,
 				cost,
+				status: 'PENDING',
 				timeOfIncident,
 			},
 		});
@@ -245,7 +246,7 @@ const createMembership = async (req, res, next) => {
 const updateMembership = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const { locationDistance, problem, timeOfIncident, cost } = req.body;
+		const { locationDistance, problem, timeOfIncident, cost, status } = req.body;
 
 		let where = {
 			id,
@@ -286,6 +287,7 @@ const updateMembership = async (req, res, next) => {
 				locationDistance,
 				problem,
 				cost,
+				status,
 				timeOfIncident,
 			},
 		});

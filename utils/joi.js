@@ -32,6 +32,7 @@ const RegisterSchema = Joi.object({
 const MembershipSchema = Joi.object({
 	locationDistance: Joi.number().required(),
 	cost: Joi.number().min(0).required(),
+	status: Joi.string().valid('PENDING', 'PROCESS', 'FINISHED').required(),
 	problem: Joi.string().valid('INSTALLATION', 'DAMAGE', 'DEVICE_PROBLEMS', 'SPEED_INCREASE', 'REPORT').required(),
 	timeOfIncident: Joi.string().required(),
 });
@@ -39,6 +40,7 @@ const MembershipSchema = Joi.object({
 const UpdateMembershipSchema = Joi.object({
 	locationDistance: Joi.number(),
 	cost: Joi.number().min(0),
+	status: Joi.string().valid('PENDING', 'PROCESS', 'FINISHED'),
 	problem: Joi.string().valid('INSTALLATION', 'DAMAGE', 'DEVICE_PROBLEMS', 'SPEED_INCREASE', 'REPORT'),
 	timeOfIncident: Joi.string(),
 });

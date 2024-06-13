@@ -26,6 +26,12 @@ enum Problems {
   REPORT
 }
 
+enum Status {
+  PENDING
+  PROCESS
+  FINISHED
+}
+
 model User {
   id          String       @id @default(cuid())
   name        String
@@ -52,6 +58,7 @@ model Membership {
   problem          Problems @default(INSTALLATION)
   timeOfIncident   DateTime
   cost             Float
+  status           Status
   ahp              Ahp?
 }
 

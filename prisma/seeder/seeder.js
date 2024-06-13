@@ -96,6 +96,7 @@ async function seed() {
 					locationDistance: data.locationDisctance,
 					problem: randomProblem,
 					cost: data.cost,
+					status: 'PENDING',
 					timeOfIncident: randomDate,
 				},
 			});
