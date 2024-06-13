@@ -90,7 +90,7 @@ const getMembership = async (req, res, next) => {
 
 const createMembership = async (req, res, next) => {
 	try {
-		let { locationDistance, problem, timeOfIncident, cost, status } = req.body;
+		let { locationDistance, problem, timeOfIncident, cost } = req.body;
 
 		const fetchMember = await prisma.membership.findMany({
 			include: { user: true },
