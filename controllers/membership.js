@@ -11,11 +11,24 @@ const getMemberships = async (req, res, next) => {
 		const limit = parseInt(req.query.limit) || 10;
 		const offset = (page - 1) * limit;
 
+		let where;
+
+		if (req.user.role === 'MEMBER') {
+			where = {
+				userId: req.user.id,
+			};
+		}
+
 		const memberships = await prisma.membership.findMany({
 			include: {
 				ahp: true,
-				user: true,
+				user: {
+					include: {
+						auth: true,
+					},
+				},
 			},
+			where,
 			orderBy: {
 				ahp: {
 					rankScore: 'desc',
@@ -46,11 +59,12 @@ const getMemberships = async (req, res, next) => {
 };
 
 const getMembership = async (req, res, next) => {
-	const { id } = req.params;
 	try {
+		const { id } = req.params;
 		let where = {
 			id,
 		};
+
 		if (req.user.role !== 'ADMIN') {
 			where = {
 				id,
@@ -61,7 +75,11 @@ const getMembership = async (req, res, next) => {
 		const membership = await prisma.membership.findUnique({
 			where,
 			include: {
-				user: true,
+				user: {
+					include: {
+						auth: true,
+					},
+				},
 				ahp: true,
 			},
 		});

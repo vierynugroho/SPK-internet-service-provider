@@ -11,11 +11,11 @@ const router = Router();
 router
 	.route('/')
 	.post(authentication, checkRole(['ADMIN', 'MEMBER']), validator(MembershipSchema), createMembership)
-	.get(authentication, checkRole(['ADMIN']), getMemberships);
+	.get(authentication, getMemberships);
 router
 	.route('/:id')
 	.put(authentication, checkRole(['ADMIN', 'MEMBER']), validator(UpdateMembershipSchema), updateMembership)
 	.delete(authentication, checkRole(['ADMIN', 'MEMBER']), deleteMembership)
-	.get(authentication, checkRole(['ADMIN', 'MEMBER']), getMembership);
+	.get(authentication, getMembership);
 
 export default router;
