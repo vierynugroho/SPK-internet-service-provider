@@ -16,7 +16,11 @@ const getMemberships = async (req, res, next) => {
 				ahp: true,
 				user: {
 					include: {
-						auth: true
+						auth: {
+							select: {
+								email: true
+							}
+						}
 					}
 				},
 			},
