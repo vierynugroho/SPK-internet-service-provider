@@ -24,7 +24,15 @@ const getMemberships = async (req, res, next) => {
 				ahp: true,
 				user: {
 					include: {
-						auth: true,
+						auth: {
+							include: {
+								auth: {
+									select: {
+										email: true,
+									},
+								},
+							},
+						},
 					},
 				},
 			},
@@ -77,7 +85,15 @@ const getMembership = async (req, res, next) => {
 			include: {
 				user: {
 					include: {
-						auth: true,
+						auth: {
+							include: {
+								auth: {
+									select: {
+										email: true,
+									},
+								},
+							},
+						},
 					},
 				},
 				ahp: true,
