@@ -69,7 +69,15 @@ const getMembership = async (req, res, next) => {
 		const membership = await prisma.membership.findUnique({
 			where,
 			include: {
-				user: true,
+				user: {
+					include: {
+						auth: {
+							select: {
+								email: true
+							}
+						}
+					}
+				},
 				ahp: true,
 			},
 		});
