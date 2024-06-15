@@ -14,7 +14,11 @@ const getMemberships = async (req, res, next) => {
 		const memberships = await prisma.membership.findMany({
 			include: {
 				ahp: true,
-				user: true,
+				user: {
+					include: {
+						auth: true
+					}
+				},
 			},
 			orderBy: {
 				ahp: {
