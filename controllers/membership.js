@@ -25,12 +25,8 @@ const getMemberships = async (req, res, next) => {
 				user: {
 					include: {
 						auth: {
-							include: {
-								auth: {
-									select: {
-										email: true,
-									},
-								},
+							select: {
+								email: true,
 							},
 						},
 					},
@@ -86,12 +82,8 @@ const getMembership = async (req, res, next) => {
 				user: {
 					include: {
 						auth: {
-							include: {
-								auth: {
-									select: {
-										email: true,
-									},
-								},
+							select: {
+								email: true,
 							},
 						},
 					},
