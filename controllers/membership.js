@@ -2,6 +2,7 @@ import AHP from 'ahp';
 import { PrismaClient } from '@prisma/client';
 import createHttpError from 'http-errors';
 import { calculateAHP } from '../services/ahp.js';
+import { sendEmail } from '../services/sendMail.js';
 
 const prisma = new PrismaClient();
 const ahpContext = new AHP();
@@ -174,6 +175,9 @@ const createMembership = async (req, res, next) => {
 					rankedScores: output.rankedScores.length,
 				});
 
+				console.log(req.user.auth.email);
+				await sendEmail(req.user.auth.email, 'Status Updated - Internet Service Provider', `Hi ${req.user.name}! your requst status: PENDING`);
+
 				res.status(200).json({
 					status: true,
 					message: 'ahp calculated & membership data created successfully',
@@ -213,6 +217,17 @@ const updateMembership = async (req, res, next) => {
 
 		const membership = await prisma.membership.findUnique({
 			where,
+			include: {
+				user: {
+					include: {
+						auth: {
+							select: {
+								email: true,
+							},
+						},
+					},
+				},
+			},
 		});
 
 		if (!membership) {
@@ -284,6 +299,10 @@ const updateMembership = async (req, res, next) => {
 					rankedScoresLength: output.rankedScores,
 					rankedScores: output.rankedScores.length,
 				});
+
+				if (status !== membership.status) {
+					await sendEmail(membership.user.auth.email, 'Status Updated - Internet Service Provider', `Hi ${membership.user.name}! your requst status: ${status}`);
+				}
 
 				res.status(200).json({
 					status: true,
