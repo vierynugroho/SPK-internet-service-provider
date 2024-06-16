@@ -161,7 +161,7 @@ const createMembership = async (req, res, next) => {
 
 				await sendEmail(
 					req.user.auth.email,
-					'Status Updated - Internet Service Provider',
+					'New Report - Internet Service Provider',
 					`Hi ${req.user.name}! \ntoken: ${createdMembership.id}\n-----------------------\nproblem: ${createdMembership.problem}\ntime of incident: ${createdMembership.timeOfIncident}\ndescription: ${createdMembership.description}\nstatus: ${createdMembership.status}`
 				);
 				res.status(200).json({
@@ -224,7 +224,7 @@ const updateMembership = async (req, res, next) => {
 			);
 		}
 
-		if (req.user.id !== membership.userId) {
+		if (req.user.id !== membership.userId && req.user.role === 'MEMBER') {
 			return next(
 				createHttpError(403, {
 					message: "you don't have access here",
@@ -235,7 +235,6 @@ const updateMembership = async (req, res, next) => {
 		await prisma.membership.update({
 			where: {
 				id,
-				userId: req.user.id,
 			},
 			data: {
 				locationDistance: locationDistance || membership.locationDistance,
@@ -273,7 +272,7 @@ const updateMembership = async (req, res, next) => {
 				if (status !== membership.status) {
 					await sendEmail(
 						membership.user.auth.email,
-						'Status Updated - Internet Service Provider',
+						'Update Report - Internet Service Provider',
 						`Hi ${membership.user.name}! \ntoken: ${membership.id}\n-----------------------\nproblem: ${membership.problem}\ntime of incident: ${membership.timeOfIncident}\ndescription: ${membership.description}\nstatus: ${membership.status}`
 					);
 				}
@@ -325,7 +324,7 @@ const deleteMembership = async (req, res, next) => {
 			);
 		}
 
-		if (req.user.id !== membership.userId) {
+		if (req.user.id !== membership.userId && req.user.role === 'MEMBER') {
 			return next(
 				createHttpError(403, {
 					message: "you don't have access here",
@@ -336,7 +335,6 @@ const deleteMembership = async (req, res, next) => {
 		await prisma.membership.delete({
 			where: {
 				id,
-				userId: req.user.id,
 			},
 		});
 

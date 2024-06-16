@@ -111,4 +111,29 @@ const register = async (req, res, next) => {
 	}
 };
 
-export { login, register };
+const userLoggedIn = async (req, res, next) => {
+	try {
+		const user = await prisma.user.findUnique({
+			where: {
+				id: req.user.id,
+			},
+			include: {
+				auth: {
+					select: {
+						email: true,
+					},
+				},
+			},
+		});
+
+		res.status(200).json({
+			status: true,
+			message: 'user data retrieved successfully',
+			data: {
+				user,
+			},
+		});
+	} catch (error) {}
+};
+
+export { login, register, userLoggedIn };
