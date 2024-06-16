@@ -68,18 +68,6 @@ const calculateAHP = async (membershipId, locationDistance, problem, timeOfIncid
 		member_cost.push(cost);
 	}
 
-	console.log('====================================');
-	console.log(alternative);
-	console.log('====================================');
-	console.log(member_problem);
-	console.log('====================================');
-	console.log(member_timeOfIncident);
-	console.log('====================================');
-	console.log(member_cost);
-	console.log('====================================');
-	console.log(member_locationDistance);
-	console.log('====================================');
-
 	ahpContext.import({
 		items: alternative,
 		criteria: ['timeOfIncident', 'problem', 'locationDistance', 'cost'],
@@ -97,6 +85,7 @@ const calculateAHP = async (membershipId, locationDistance, problem, timeOfIncid
 		],
 	});
 	const output = ahpContext.run();
+	console.log(output);
 	// CI = output.criteriaRankMetaMap.ci
 	// CR = output.criteriaRankMetaMap.cr
 	// scoreRank = output.rankedScores

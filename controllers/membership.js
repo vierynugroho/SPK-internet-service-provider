@@ -140,14 +140,6 @@ const createMembership = async (req, res, next) => {
 
 		try {
 			await prisma.$transaction(async (tx) => {
-				console.log({
-					members: members,
-					ci: output.criteriaRankMetaMap.ci,
-					cr: output.criteriaRankMetaMap.cr,
-					rankedScores: output.rankedScores,
-					rankedScoresLength: output.rankedScores.length,
-				});
-
 				await Promise.all(
 					members.map(async (member, index) => {
 						await tx.ahp.upsert({
@@ -167,15 +159,6 @@ const createMembership = async (req, res, next) => {
 					})
 				);
 
-				console.log({
-					members: members.length,
-					ci: output.criteriaRankMetaMap.ci,
-					cr: output.criteriaRankMetaMap.cr,
-					rankedScoresLength: output.rankedScores,
-					rankedScores: output.rankedScores.length,
-				});
-
-				console.log(req.user.auth.email);
 				await sendEmail(req.user.auth.email, 'Status Updated - Internet Service Provider', `Hi ${req.user.name}! your requst status: PENDING`);
 
 				res.status(200).json({
@@ -265,14 +248,6 @@ const updateMembership = async (req, res, next) => {
 
 		try {
 			await prisma.$transaction(async (tx) => {
-				console.log({
-					members: members,
-					ci: output.criteriaRankMetaMap.ci,
-					cr: output.criteriaRankMetaMap.cr,
-					rankedScores: output.rankedScores,
-					rankedScoresLength: output.rankedScores.length,
-				});
-
 				await Promise.all(
 					members.map(async (member, index) => {
 						await tx.ahp.upsert({
@@ -291,14 +266,6 @@ const updateMembership = async (req, res, next) => {
 						});
 					})
 				);
-
-				console.log({
-					members: members.length,
-					ci: output.criteriaRankMetaMap.ci,
-					cr: output.criteriaRankMetaMap.cr,
-					rankedScoresLength: output.rankedScores,
-					rankedScores: output.rankedScores.length,
-				});
 
 				if (status !== membership.status) {
 					await sendEmail(membership.user.auth.email, 'Status Updated - Internet Service Provider', `Hi ${membership.user.name}! your requst status: ${status}`);
