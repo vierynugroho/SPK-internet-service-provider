@@ -35,6 +35,7 @@ const MembershipSchema = Joi.object({
 	status: Joi.string().valid('PENDING', 'PROCESS', 'FINISHED').required(),
 	problem: Joi.string().valid('INSTALLATION', 'DAMAGE', 'DEVICE_PROBLEMS', 'SPEED_INCREASE', 'REPORT').required(),
 	timeOfIncident: Joi.string().required(),
+	description: Joi.string(),
 });
 
 const UpdateMembershipSchema = Joi.object({
@@ -43,6 +44,7 @@ const UpdateMembershipSchema = Joi.object({
 	status: Joi.string().valid('PENDING', 'PROCESS', 'FINISHED'),
 	problem: Joi.string().valid('INSTALLATION', 'DAMAGE', 'DEVICE_PROBLEMS', 'SPEED_INCREASE', 'REPORT'),
 	timeOfIncident: Joi.string(),
+	description: Joi.string(),
 });
 
 export { LoginSchema, RegisterSchema, MembershipSchema, UpdateMembershipSchema };
