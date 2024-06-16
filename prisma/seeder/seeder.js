@@ -98,6 +98,7 @@ async function seed() {
 					cost: data.cost,
 					status: 'PENDING',
 					timeOfIncident: randomDate,
+					description: 'description report',
 				},
 			});
 			return membership;

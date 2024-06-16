@@ -58,6 +58,7 @@ model Membership {
   problem          Problems @default(INSTALLATION)
   timeOfIncident   DateTime
   cost             Float
+  description      String
   status           Status
   ahp              Ahp?
 }

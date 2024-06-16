@@ -1,6 +1,7 @@
 import AHP from 'ahp';
 import { PrismaClient } from '@prisma/client';
 import createHttpError from 'http-errors';
+import { calculateAHP } from '../services/ahp';
 
 const prisma = new PrismaClient();
 const ahpContext = new AHP();
@@ -116,62 +117,17 @@ const getMembership = async (req, res, next) => {
 
 const createMembership = async (req, res, next) => {
 	try {
-		let { locationDistance, problem, timeOfIncident, cost } = req.body;
+		let { locationDistance, problem, timeOfIncident, cost, description } = req.body;
 
 		const fetchMember = await prisma.membership.findMany({
 			include: { user: true },
 		});
 
-		const members = fetchMember.map((data) => data.id);
-
-		let alternative = [];
-		let member_locationDistance = [];
-		let member_problem = [];
-		let member_timeOfIncident = [];
-		let member_cost = [];
-		let problemNumber;
-		let toiNumber;
-
-		fetchMember.forEach((data) => {
-			if (data.problem === 'INSTALLATION') {
-				data.problem = 2;
-			} else if (data.problem === 'DAMAGE') {
-				data.problem = 2;
-			} else if (data.problem === 'REPORT') {
-				data.problem = 1;
-			} else if (data.problem === 'DEVICE_PROBLEMS') {
-				data.problem = 1;
-			} else if (data.problem === 'SPEED_INCREASE') {
-				data.problem = 1;
-			}
-
-			alternative = members;
-			member_locationDistance.push(data.locationDistance);
-			member_problem.push(data.problem);
-
-			if (data.timeOfIncident >= new Date(timeOfIncident)) {
-				data.timeOfIncident = 1 / 2;
-				toiNumber = 1;
-			} else {
-				data.timeOfIncident = 1;
-				toiNumber = 1 / 2;
-			}
-
-			member_timeOfIncident.push(data.timeOfIncident);
-			member_cost.push(data.cost);
-		});
-
-		if (problem === 'INSTALLATION') {
-			problemNumber = 2;
-		} else if (problem === 'DAMAGE') {
-			problemNumber = 2;
-		} else if (problem === 'REPORT') {
-			problemNumber = 1;
-		} else if (problem === 'DEVICE_PROBLEMS') {
-			problemNumber = 1;
-		} else if (problem === 'SPEED_INCREASE') {
-			problemNumber = 1;
+		if (!description) {
+			description = `${req.user.name} - Jarak: ${locationDistance} km - Problem: ${problem} - Cost: Rp. ${cost}`;
 		}
+
+		const members = fetchMember.map((data) => data.id);
 
 		const createdMembership = await prisma.membership.create({
 			data: {
@@ -181,35 +137,11 @@ const createMembership = async (req, res, next) => {
 				cost,
 				status: 'PENDING',
 				timeOfIncident,
+				description,
 			},
 		});
 
-		alternative.push(createdMembership.id);
-		member_timeOfIncident.push(toiNumber);
-		member_locationDistance.push(locationDistance);
-		member_problem.push(problemNumber);
-		member_cost.push(cost);
-
-		ahpContext.import({
-			items: alternative,
-			criteria: ['timeOfIncident', 'problem', 'locationDistance', 'cost'],
-			criteriaItemRank: {
-				timeOfIncident: member_timeOfIncident,
-				problem: member_problem,
-				locationDistance: member_locationDistance,
-				cost: member_cost,
-			},
-			criteriaRank: [
-				[1, 3, 3, 5],
-				[1 / 3, 1, 1, 3],
-				[1 / 3, 1, 1, 3],
-				[1 / 5, 1 / 3, 1 / 3, 1],
-			],
-		});
-		const output = ahpContext.run();
-		// CI = output.criteriaRankMetaMap.ci
-		// CR = output.criteriaRankMetaMap.cr
-		// scoreRank = output.rankedScores
+		const output = await calculateAHP(createMembership.id, locationDistance, problem, timeOfIncident, cost);
 
 		try {
 			await prisma.$transaction(async (tx) => {
@@ -272,7 +204,7 @@ const createMembership = async (req, res, next) => {
 const updateMembership = async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const { locationDistance, problem, timeOfIncident, cost, status } = req.body;
+		const { locationDistance, problem, timeOfIncident, cost, status, description } = req.body;
 
 		let where = {
 			id,
@@ -315,6 +247,7 @@ const updateMembership = async (req, res, next) => {
 				cost,
 				status,
 				timeOfIncident,
+				description,
 			},
 		});
 
