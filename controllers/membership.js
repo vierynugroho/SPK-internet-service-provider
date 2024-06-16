@@ -162,7 +162,7 @@ const createMembership = async (req, res, next) => {
 				await sendEmail(
 					req.user.auth.email,
 					'Status Updated - Internet Service Provider',
-					`Hi ${req.user.name}! \ntoken: ${createdMembership.id}\n-----------------------\nproblem: ${createdMembership.problem}\ntime of incident: ${createdMembership.timeOfIncident}\ndescription: ${createdMembership.description}\nstatus: ${status}`
+					`Hi ${req.user.name}! \ntoken: ${createdMembership.id}\n-----------------------\nproblem: ${createdMembership.problem}\ntime of incident: ${createdMembership.timeOfIncident}\ndescription: ${createdMembership.description}\nstatus: ${createdMembership.status}`
 				);
 				res.status(200).json({
 					status: true,
@@ -274,7 +274,7 @@ const updateMembership = async (req, res, next) => {
 					await sendEmail(
 						membership.user.auth.email,
 						'Status Updated - Internet Service Provider',
-						`Hi ${membership.user.name}! \ntoken: ${membership.id}\n-----------------------\nproblem: ${membership.problem}\ntime of incident: ${membership.timeOfIncident}\ndescription: ${membership.description}\nstatus: ${status}`
+						`Hi ${membership.user.name}! \ntoken: ${membership.id}\n-----------------------\nproblem: ${membership.problem}\ntime of incident: ${membership.timeOfIncident}\ndescription: ${membership.description}\nstatus: ${membership.status}`
 					);
 				}
 
