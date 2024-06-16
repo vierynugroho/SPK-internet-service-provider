@@ -1,5 +1,4 @@
 import { createTransport } from 'nodemailer';
-import createHttpError from 'http-errors';
 const { APP_EMAIL, APP_PASS } = process.env;
 
 const sendEmail = async (to, subject, text) => {

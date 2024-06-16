@@ -54,7 +54,7 @@ const login = async (req, res, next) => {
 
 const register = async (req, res, next) => {
 	try {
-		const { name, phoneNumber, password, email } = req.body;
+		const { name, phoneNumber, password, email, address } = req.body;
 		const hashedPassword = secretHash(password);
 
 		// check email is unvailable
@@ -78,9 +78,10 @@ const register = async (req, res, next) => {
 		// insert data to db
 		await prisma.user.create({
 			data: {
-				name: name,
-				phoneNumber: phoneNumber,
+				name,
+				phoneNumber,
 				role: 'MEMBER',
+				address,
 				auth: {
 					create: {
 						email: email,
@@ -95,6 +96,7 @@ const register = async (req, res, next) => {
 			message: 'user registered successfully',
 			data: {
 				name,
+				address,
 				email,
 				phoneNumber,
 				role: 'MEMBER',

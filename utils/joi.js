@@ -27,6 +27,7 @@ const RegisterSchema = Joi.object({
 		.required(),
 	phoneNumber: Joi.string().min(11).max(16).required(),
 	password: Joi.string().min(8).max(20).required(),
+	address: Joi.string().required(),
 });
 
 const MembershipSchema = Joi.object({
