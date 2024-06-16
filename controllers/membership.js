@@ -159,8 +159,11 @@ const createMembership = async (req, res, next) => {
 					})
 				);
 
-				await sendEmail(req.user.auth.email, 'Status Updated - Internet Service Provider', `Hi ${req.user.name}! your requst status: PENDING`);
-
+				await sendEmail(
+					req.user.auth.email,
+					'Status Updated - Internet Service Provider',
+					`Hi ${req.user.name}! \ntoken: ${createdMembership.id}\n-----------------------\nproblem: ${createdMembership.problem}\ntime of incident: ${createdMembership.timeOfIncident}\ndescription: ${createdMembership.description}\nstatus: ${status}`
+				);
 				res.status(200).json({
 					status: true,
 					message: 'ahp calculated & membership data created successfully',
@@ -268,7 +271,11 @@ const updateMembership = async (req, res, next) => {
 				);
 
 				if (status !== membership.status) {
-					await sendEmail(membership.user.auth.email, 'Status Updated - Internet Service Provider', `Hi ${membership.user.name}! your requst status: ${status}`);
+					await sendEmail(
+						membership.user.auth.email,
+						'Status Updated - Internet Service Provider',
+						`Hi ${membership.user.name}! \ntoken: ${membership.id}\n-----------------------\nproblem: ${membership.problem}\ntime of incident: ${membership.timeOfIncident}\ndescription: ${membership.description}\nstatus: ${status}`
+					);
 				}
 
 				res.status(200).json({
