@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 const ahpContext = new AHP();
 
-const calculateAHP = async (userId, locationDistance, problem, timeOfIncident, cost) => {
+const calculateAHP = async (membershipId, locationDistance, problem, timeOfIncident, cost) => {
 	const fetchMember = await prisma.membership.findMany({
 		include: { user: true },
 	});
@@ -60,13 +60,25 @@ const calculateAHP = async (userId, locationDistance, problem, timeOfIncident, c
 		problemNumber = 1;
 	}
 
-	if (userId !== null) {
-		alternative.push(createdMembership.id);
+	if (membershipId !== null) {
+		alternative.push(membershipId);
+		member_timeOfIncident.push(toiNumber);
+		member_locationDistance.push(locationDistance);
+		member_problem.push(problemNumber);
+		member_cost.push(cost);
 	}
-	member_timeOfIncident.push(toiNumber);
-	member_locationDistance.push(locationDistance);
-	member_problem.push(problemNumber);
-	member_cost.push(cost);
+
+	console.log('====================================');
+	console.log(alternative);
+	console.log('====================================');
+	console.log(member_problem);
+	console.log('====================================');
+	console.log(member_timeOfIncident);
+	console.log('====================================');
+	console.log(member_cost);
+	console.log('====================================');
+	console.log(member_locationDistance);
+	console.log('====================================');
 
 	ahpContext.import({
 		items: alternative,
@@ -88,7 +100,7 @@ const calculateAHP = async (userId, locationDistance, problem, timeOfIncident, c
 	// CI = output.criteriaRankMetaMap.ci
 	// CR = output.criteriaRankMetaMap.cr
 	// scoreRank = output.rankedScores
-	return output;
+	return { output, members };
 };
 
 export { calculateAHP };

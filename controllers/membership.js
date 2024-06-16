@@ -1,7 +1,7 @@
 import AHP from 'ahp';
 import { PrismaClient } from '@prisma/client';
 import createHttpError from 'http-errors';
-import { calculateAHP } from '../services/ahp';
+import { calculateAHP } from '../services/ahp.js';
 
 const prisma = new PrismaClient();
 const ahpContext = new AHP();
@@ -119,15 +119,9 @@ const createMembership = async (req, res, next) => {
 	try {
 		let { locationDistance, problem, timeOfIncident, cost, description } = req.body;
 
-		const fetchMember = await prisma.membership.findMany({
-			include: { user: true },
-		});
-
 		if (!description) {
 			description = `${req.user.name} - Jarak: ${locationDistance} km - Problem: ${problem} - Cost: Rp. ${cost}`;
 		}
-
-		const members = fetchMember.map((data) => data.id);
 
 		const createdMembership = await prisma.membership.create({
 			data: {
@@ -141,7 +135,7 @@ const createMembership = async (req, res, next) => {
 			},
 		});
 
-		const output = await calculateAHP(createMembership.id, locationDistance, problem, timeOfIncident, cost);
+		const { output, members } = await calculateAHP(createdMembership.id, locationDistance, problem, timeOfIncident, cost);
 
 		try {
 			await prisma.$transaction(async (tx) => {
@@ -209,6 +203,7 @@ const updateMembership = async (req, res, next) => {
 		let where = {
 			id,
 		};
+
 		if (req.user.role !== 'ADMIN') {
 			where = {
 				id,
@@ -242,19 +237,66 @@ const updateMembership = async (req, res, next) => {
 				userId: req.user.id,
 			},
 			data: {
-				locationDistance,
-				problem,
-				cost,
-				status,
-				timeOfIncident,
-				description,
+				locationDistance: locationDistance || membership.locationDistance,
+				problem: problem || membership.problem,
+				cost: cost || membership.cost,
+				status: status || membership.status,
+				timeOfIncident: timeOfIncident || membership.timeOfIncident,
+				description: description || membership.description,
 			},
 		});
 
-		res.status(200).json({
-			status: true,
-			message: 'membership data updated successfully',
-		});
+		const { output, members } = await calculateAHP(null, locationDistance, problem, timeOfIncident, cost);
+
+		try {
+			await prisma.$transaction(async (tx) => {
+				console.log({
+					members: members,
+					ci: output.criteriaRankMetaMap.ci,
+					cr: output.criteriaRankMetaMap.cr,
+					rankedScores: output.rankedScores,
+					rankedScoresLength: output.rankedScores.length,
+				});
+
+				await Promise.all(
+					members.map(async (member, index) => {
+						await tx.ahp.upsert({
+							where: { membershipId: member },
+							update: {
+								ci: output.criteriaRankMetaMap.ci,
+								cr: output.criteriaRankMetaMap.cr,
+								rankScore: output.rankedScores[index],
+							},
+							create: {
+								membershipId: member,
+								ci: output.criteriaRankMetaMap.ci,
+								cr: output.criteriaRankMetaMap.cr,
+								rankScore: output.rankedScores[index],
+							},
+						});
+					})
+				);
+
+				console.log({
+					members: members.length,
+					ci: output.criteriaRankMetaMap.ci,
+					cr: output.criteriaRankMetaMap.cr,
+					rankedScoresLength: output.rankedScores,
+					rankedScores: output.rankedScores.length,
+				});
+
+				res.status(200).json({
+					status: true,
+					message: 'ahp calculated & membership data updated successfully',
+				});
+			});
+		} catch (error) {
+			return next(
+				createHttpError(422, {
+					message: error.message,
+				})
+			);
+		}
 	} catch (error) {
 		next(
 			createHttpError(500, {

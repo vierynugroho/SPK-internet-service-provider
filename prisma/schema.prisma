@@ -47,13 +47,13 @@ model Auth {
   userId   String @unique
   email    String @unique
   password String
-  user     User   @relation(fields: [userId], references: [id])
+  user     User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Membership {
   id               String   @id @default(cuid())
   userId           String
-  user             User     @relation(fields: [userId], references: [id])
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   locationDistance Float
   problem          Problems @default(INSTALLATION)
   timeOfIncident   DateTime
@@ -66,7 +66,7 @@ model Membership {
 model Ahp {
   id           String     @id @default(cuid())
   membershipId String     @unique
-  membership   Membership @relation(fields: [membershipId], references: [id])
+  membership   Membership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
   ci           Float
   cr           Float
   rankScore    Float
