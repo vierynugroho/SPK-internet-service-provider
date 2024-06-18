@@ -25,14 +25,16 @@ const login = async (req, res, next) => {
 			);
 		}
 
+		console.log(user);
+
 		if (user && secretCompare(password, user.password)) {
 			const payload = {
 				id: user.user.id,
 				name: user.user.name,
 				email: user.email,
 				phoneNumber: user.user.phoneNumber,
-				role: user.role,
-				address: user.address,
+				role: user.user.role,
+				address: user.user.address,
 			};
 
 			const token = generateJWT(payload);
