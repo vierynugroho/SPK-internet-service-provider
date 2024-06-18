@@ -31,6 +31,8 @@ const login = async (req, res, next) => {
 				name: user.user.name,
 				email: user.email,
 				phoneNumber: user.user.phoneNumber,
+				role: user.role,
+				address: user.address,
 			};
 
 			const token = generateJWT(payload);
