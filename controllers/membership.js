@@ -232,6 +232,8 @@ const updateMembership = async (req, res, next) => {
 			);
 		}
 
+		let oldStatus = membership.status;
+
 		await prisma.membership.update({
 			where: {
 				id,
@@ -269,11 +271,26 @@ const updateMembership = async (req, res, next) => {
 					})
 				);
 
-				if (status !== membership.status) {
+				const updatedMembership = await prisma.membership.findUnique({
+					where,
+					include: {
+						user: {
+							include: {
+								auth: {
+									select: {
+										email: true,
+									},
+								},
+							},
+						},
+					},
+				});
+
+				if (oldStatus !== updatedMembership.status) {
 					await sendEmail(
-						membership.user.auth.email,
+						updatedMembership.user.auth.email,
 						'Update Report - Internet Service Provider',
-						`Hi ${membership.user.name}! \ntoken: ${membership.id}\n-----------------------\nproblem: ${membership.problem}\ntime of incident: ${membership.timeOfIncident}\ndescription: ${membership.description}\nstatus: ${membership.status}`
+						`Hi ${updatedMembership.user.name}! \ntoken: ${updatedMembership.id}\n-----------------------\nproblem: ${updatedMembership.problem}\ntime of incident: ${updatedMembership.timeOfIncident}\ndescription: ${updatedMembership.description}\nstatus: ${updatedMembership.status}`
 					);
 				}
 
